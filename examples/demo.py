@@ -19,6 +19,7 @@ import argparse
 
 import numpy as np
 import torch
+from icecream import ic
 
 import smplx
 
@@ -45,9 +46,11 @@ def main(model_folder,
     betas, expression = None, None
     if sample_shape:
         betas = torch.randn([1, model.num_betas], dtype=torch.float32)
+        ic(betas.shape)
     if sample_expression:
         expression = torch.randn(
             [1, model.num_expression_coeffs], dtype=torch.float32)
+        ic(expression.shape)
 
     output = model(betas=betas, expression=expression,
                    return_verts=True)

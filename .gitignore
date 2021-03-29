@@ -107,3 +107,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# pkl, npz model files
+models/
+*.pkl
+*.npz
+

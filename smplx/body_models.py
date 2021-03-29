@@ -24,6 +24,7 @@ import numpy as np
 
 import torch
 import torch.nn as nn
+from icecream import ic
 
 from .lbs import (
     lbs, vertices2landmarks, find_dynamic_lmk_idx_and_bcoords)
@@ -131,12 +132,15 @@ class SMPL(nn.Module):
                 smpl_path)
 
             with open(smpl_path, 'rb') as smpl_file:
+                ic(smpl_path)
                 data_struct = Struct(**pickle.load(smpl_file,
                                                    encoding='latin1'))
 
         super(SMPL, self).__init__()
         self.batch_size = batch_size
-        shapedirs = data_struct.shapedirs
+        shapedirs = data_struct.shapedirs # what is this
+        #ic(shapedirs)
+        ic(shapedirs.shape)
         if (shapedirs.shape[-1] < self.SHAPE_SPACE_DIM):
             print(f'WARNING: You are using a {self.name()} model, with only'
                   ' 10 shape coefficients.')
@@ -164,10 +168,12 @@ class SMPL(nn.Module):
             vertex_ids=vertex_ids, **kwargs)
 
         self.faces = data_struct.f
+        ic(self.faces.shape)
         self.register_buffer('faces_tensor',
                              to_tensor(to_np(self.faces, dtype=np.int64),
                                        dtype=torch.long))
 
+        ic(create_betas)
         if create_betas:
             if betas is None:
                 default_betas = torch.zeros(
@@ -339,6 +345,7 @@ class SMPL(nn.Module):
         if transl is None and hasattr(self, 'transl'):
             transl = self.transl
 
+        ic(body_pose.shape)
         full_pose = torch.cat([global_orient, body_pose], dim=1)
 
         batch_size = max(betas.shape[0], global_orient.shape[0],
@@ -448,6 +455,7 @@ class SMPLLayer(SMPL):
                                 dtype=dtype, device=device)
         if transl is None:
             transl = torch.zeros([batch_size, 3], dtype=dtype, device=device)
+        ic(body_pose.shape)
         full_pose = torch.cat(
             [global_orient.reshape(-1, 1, 3, 3),
              body_pose.reshape(-1, self.NUM_BODY_JOINTS, 3, 3)],
