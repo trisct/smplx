@@ -37,7 +37,8 @@ if __name__ == '__main__':
     plotting_module='pyrender'
     use_face_contour=False
 
-    model = smplx.create(model_folder, model_type=model_type, gender=gender, num_betas=num_betas)
+    print(model_type)
+    model = smplx.create(model_folder, model_type=model_type, gender=gender)
     print(model)
 
     betas = None
@@ -55,7 +56,8 @@ if __name__ == '__main__':
         poses = poses.reshape(1, -1)
     
     output = model(betas=betas, body_pose=poses, return_verts=True, return_full_pose=True)
-    
+    ic(output)
+    ic(output.vertices.shape)
     ic(dir(output))
     
     vertices = output.vertices.detach().cpu().numpy().squeeze()
